@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Net-Metering Tracker</title>
+  <style>
+    :root {
+      --primary: #0077cc;
+      --bg-light: #f2f9ff;
+      --bg-dark: #1e1e1e;
+      --text-light: #1a1a1a;
+      --text-dark: #f1f1f1;
+    }
+
+   body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(to right, #eaf6ff, #f2f9ff);
+  color: var(--text-light);
+  transition: all 0.3s ease;
+}
+
+body.dark {
+  background: linear-gradient(to right, #1a1a1a, #2c2c2c);
+  color: var(--text-dark);
+}
+
+
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .theme-toggle {
+      font-size: 0.9rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccdbe6;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: #fbfdff;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #95a4b8;
+      color: #fff;
+    }
+
+    button.ghost {
+      background: #f0f3f7;
+      color: #1b2a3a;
+    }
+
+    .summary {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .metric {
+      padding: 12px;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .metric h3 {
+      margin: 0 0 6px 0;
+      font-size: 0.95rem;
+    }
+
+    .metric .val {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .metric .unit {
+      font-size: 0.9rem;
+      color: #4a5b6b;
+    }
+
+    .metric-import {
+      background: #ffeaea;
+      color: #d9534f;
+    }
+
+    .metric-export {
+      background: #e8fff0;
+      color: #1f8b4c;
+    }
+
+    .metric-net {
+      background: #fff9e6;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #eef2f6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #eef2f6;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #f4f9ff;
+    }
+
+    tr:hover td {
+      background: #fafcff;
+    }
+
+    .red {
+      color: #d9534f;
+      font-weight: bold;
+    }
+
+    .green {
+      color: #1f8b4c;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7a8a;
+      font-size: 0.85rem;
+      margin: 20px 0;
+    }
+
+    /* Dark mode */
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    body.dark header {
+      background: #111;
+      color: #f1f1f1;
+    }
+
+    body.dark .card {
+      background: #2b2b2b;
+    }
+
+    body.dark input {
+      background: #1f1f1f;
+      color: #f1f1f1;
+      border: 1px solid #444;
+    }
+
+    body.dark .ghost {
+      background: #3a3a3a;
+      color: #fff;
+    }
+
+    body.dark .secondary {
+      background: #666;
+      color: #fff;
+    }
+
+    body.dark .primary {
+      background: #0077cc;
+    }
+
+    body.dark table {
+      background: #1f1f1f;
+    }
+
+    body.dark th {
+      background: #2a2a2a;
+    }
+
+    body.dark tr:hover td {
+      background: #333;
+    }
+
+    body.dark .metric-import {
+      background: #5a2c2c;
+      color: #ff9999;
+    }
+
+    body.dark .metric-export {
+      background: #1c3b2c;
+      color: #9effc6;
+    }
+
+    body.dark .metric-net {
+      background: #47421f;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Net-Meter — Daily Tracker
+    <div class="theme-toggle">
+      <label>
+        <input type="checkbox" id="themeToggle" /> Dark Mode
+      </label>
+    </div>
+  </header>
+  <div class="container">
+    <!-- Summary -->
+    <section class="card">
+      <h2>Summary (Latest Day)</h2>
+      <div class="summary" style="margin-top:10px">
+        <div class="metric metric-import">
+          <h3>Total Import</h3>
+          <div class="val" id="sumImport">0.00</div>
+          <div class="unit">kWh</div>
+        </div>
+        <div class="metric metric-export">
+          <h3>Total Export</h3>
+          <div class="val" id="sumExport">0.00</div>
+          <div class="unit">kWh</div>
+        </div>
+        <div class="metric metric-net">
+          <h3>Net (Import − Export)</h3>
+          <div class="val" id="sumNet">0.00</div>
+          <div class="unit">kWh</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Record -->
+    <section class="card">
+      <h2>New Record</h2>
+      <div class="grid grid-2">
+        <div><label for="date">Date</label><input type="date" id="date" /></div>
+        <div><label for="importReading">Import Reading (kWh)</label><input type="number" step="0.01" id="importReading" /></div>
+        <div><label for="exportReading">Export Reading (kWh)</label><input type="number" step="0.01" id="exportReading" /></div>
+        <div><label for="utilityImport">Utility Import (kWh)</label><input type="number" step="0.01" id="utilityImport" /></div>
+        <div><label for="utilityExport">Utility Export (kWh)</label><input type="number" step="0.01" id="utilityExport" /></div>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="primary" id="saveBtn">Save</button>
+        <button class="secondary" id="clearBtn">Clear</button>
+        <button class="ghost" id="csvBtn">Export CSV</button>
+      </div>
+    </section>
+
+    <!-- History -->
+    <section class="card">
+      <h2>History</h2>
+      <div class="table-wrap" id="historyWrap"></div>
+      <div style="margin-top:10px;">
+        <button class="secondary" id="deleteAllBtn">Delete All</button>
+      </div>
+    </section>
+
+    <footer>Data is stored locally in your browser</footer>
+  </div>
+
+  <script>
+    const KEY = 'nm_meter_records_v4';
+    let records = JSON.parse(localStorage.getItem(KEY) || '[]');
+    const $ = id => document.getElementById(id);
+    const fmt = n => Number(n || 0).toFixed(2);
+
+    const dateEl = $('date'),
+          impEl = $('importReading'),
+          expEl = $('exportReading'),
+          uImpEl = $('utilityImport'),
+          uExpEl = $('utilityExport');
+
+    function calc(idxAsc, asc) {
+      const rec = asc[idxAsc], prev = idxAsc > 0 ? asc[idxAsc - 1] : {importReading: 0, exportReading: 0};
+      const todayImp = (rec.importReading || 0) - (prev.importReading || 0);
+      const todayExp = (rec.exportReading || 0) - (prev.exportReading || 0);
+      const totalImp = (rec.importReading || 0) - (rec.utilityImport || 0);
+      const totalExp = (rec.exportReading || 0) - (rec.utilityExport || 0);
+      const net = totalImp - totalExp;
+      return {todayImp, todayExp, totalImp, totalExp, net};
+    }
+
+   function render() {
+  const asc = [...records].sort((a, b) => a.date.localeCompare(b.date));
+  const desc = [...records].sort((a, b) => b.date.localeCompare(a.date));
+  if (asc.length > 0) {
+    const lastIdx = asc.length - 1, c = calc(lastIdx, asc);
+    $('sumImport').textContent = fmt(c.totalImp);
+    $('sumExport').textContent = fmt(c.totalExp);
+    const netEl = $('sumNet');
+    const netVal = fmt(Math.abs(c.net));
+    if (c.net > 0) {
+      netEl.textContent = `+${netVal}`;
+      netEl.className = 'val red';
+    } else if (c.net < 0) {
+      netEl.textContent = `-${netVal}`;
+      netEl.className = 'val green';
+    } else {
+      netEl.textContent = '0.00';
+      netEl.className = 'val';
+    }
+  }
+
+  let html = '';
+  if (desc.length === 0) {
+    html = '<div style="padding:12px; text-align:center; color:#6b7a8a">No records yet</div>';
+  } else {
+    html += '<table><thead><tr><th>Date</th><th>Import</th><th>Export</th><th>Utility Imp</th><th>Utility Exp</th><th>Today Imp</th><th>Today Exp</th><th>Total Imp</th><th>Total Exp</th><th>Net</th><th>Action</th></tr></thead><tbody>';
+    desc.forEach(r => {
+      const idx = asc.findIndex(x => x.date === r.date), c = calc(idx, asc);
+      const netAbs = fmt(Math.abs(c.net));
+      const netDisplay = c.net > 0 ? `+${netAbs}` : c.net < 0 ? `-${netAbs}` : '0.00';
+      const netClass = c.net > 0 ? 'red' : c.net < 0 ? 'green' : '';
+      html += `<tr>
+        <td>${r.date}</td>
+        <td class="red">${fmt(r.importReading)}</td>
+        <td class="green">${fmt(r.exportReading)}</td>
+        <td>${fmt(r.utilityImport)}</td>
+        <td>${fmt(r.utilityExport)}</td>
+        <td>${fmt(c.todayImp)}</td>
+        <td>${fmt(c.todayExp)}</td>
+        <td>${fmt(c.totalImp)}</td>
+        <td>${fmt(c.totalExp)}</td>
+        <td class="${netClass}">${netDisplay}</td>
+        <td><button class="ghost" onclick="editRec('${r.date}')">Edit</button> <button class="secondary" onclick="delRec('${r.date}')">Delete</button></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  $('historyWrap').innerHTML = html;
+}
+
+    function save() {
+      const rec = {
+        date: dateEl.value,
+        importReading: parseFloat(impEl.value) || 0,
+        exportReading: parseFloat(expEl.value) || 0,
+        utilityImport: parseFloat(uImpEl.value) || 0,
+        utilityExport: parseFloat(uExpEl.value) || 0
+      };
+      const idx = records.findIndex(r => r.date === rec.date);
+      if (idx >= 0) records[idx] = rec;
+      else records.push(rec);
+      localStorage.setItem(KEY, JSON.stringify(records));
+      render();
+      impEl.value = ''; expEl.value = '';
+    }
+
+    function clearForm() {
+      dateEl.value = ''; impEl.value = ''; expEl.value = ''; uImpEl.value = ''; uExpEl.value = '';
+    }
+
+    function delRec(date) {
+      records = records.filter(r => r.date !== date);
+      localStorage.setItem(KEY, JSON.stringify(records));
+      render();
+    }
+
+    function editRec(date) {
+      const r = records.find(x => x.date === date); if (!r) return;
+      dateEl.value = r.date; impEl.value = r.importReading; expEl.value = r.exportReading;
+      uImpEl.value = r.utilityImport; uExpEl.value = r.utilityExport;
+    }
+
+    $('saveBtn').onclick = save;
+    $('clearBtn').onclick = clearForm;
+    $('deleteAllBtn').onclick = () => {
+      if (confirm('Delete all?')) {
+        records = [];
+        localStorage.removeItem(KEY);
+        render();
+      }
+    };
+
+    $('csvBtn').onclick = () => {
+      if (records.length === 0) { alert('No data'); return; }
+      let csv = 'Date,Import,Export,UtilityImport,UtilityExport\n';
+      records.forEach(r => {
+        csv += `${r.date},${r.importReading},${r.exportReading},${r.utilityImport},${r.utilityExport}\n`;
+      });
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'net_metering.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Theme toggle
+    const themeToggle = $('themeToggle');
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark');
+      themeToggle.checked = true;
+    }
+
+    themeToggle.addEventListener('change', () => {
+      if (themeToggle.checked) {
+        document.body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
