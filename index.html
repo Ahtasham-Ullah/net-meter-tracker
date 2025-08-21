@@ -351,10 +351,10 @@ body.dark {
     const netEl = $('sumNet');
     const netVal = fmt(Math.abs(c.net));
     if (c.net > 0) {
-      netEl.textContent = `+${netVal}`;
+      netEl.textContent = `-${netVal}`;
       netEl.className = 'val red';
     } else if (c.net < 0) {
-      netEl.textContent = `-${netVal}`;
+      netEl.textContent = `+${netVal}`;
       netEl.className = 'val green';
     } else {
       netEl.textContent = '0.00';
@@ -470,3 +470,4 @@ body.dark {
   </script>
 </body>
 </html>
+
